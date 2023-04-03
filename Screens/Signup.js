@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert , ScrollView, Dimensions} from 'react-native';
 import { useState, useEffect } from 'react';
-// import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInAnonymously, onAuthStateChanged } from "firebase/auth";
+import {auth} from "../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { CheckBox } from 'react-native-elements';
 
@@ -32,34 +33,33 @@ const Signup = ({ navigation }) => {
       Alert.alert('Please accept the Terms of Use & Privacy Policy');
       return;
     }
-    // try {
-    //   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    //   console.log("Successful");
-    //   const user = userCredential.user;
-    //   console.log("User data,", user);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("Successful");
+      const user = userCredential.user;
 
-    //   // write code to save your data in firestore
-    //   // FirebaseError.firestore.write(user.uid,user.uid)
+      // write code to save your data in firestore
+      // FirebaseError.firestore.write(user.uid,user.uid)
 
-    //   Alert.alert(
-    //     'Registered Successfully, Please Login',
-    //     '',
-    //     [
-    //       { text: 'OK', onPress: () => navigation.navigate('Login') }
-    //     ]
-    //   );
-    //   setEmail('');
-    //   setName('');
-    //   setPassword('');
-    //   setConfirmPassword('');
-    //   setIsChecked(false);
-    // } catch (error) {
-    //   const errorCode = error.code;
-    //   const errorMessage = error.message;
-    //   console.log('Error Code == ', errorCode)
-    //   console.log('Error Message == ', errorMessage)
-    //   Alert.alert('Registration Failed', errorMessage);
-    // }
+      Alert.alert(
+        'Registered Successfully, Please Login',
+        '',
+        [
+          { text: 'OK', onPress: () => navigation.navigate('Login') }
+        ]
+      );
+      setEmail('');
+      setName('');
+      setPassword('');
+      setConfirmPassword('');
+      setIsChecked(false);
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log('Error Code == ', errorCode)
+      console.log('Error Message == ', errorMessage)
+      Alert.alert('Registration Failed', errorMessage);
+    }
   };
 
   const goToLogin = () => {

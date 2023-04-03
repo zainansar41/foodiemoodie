@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 
 
-// import {auth} from "./firebase";
-// import {createUserWithEmailAndPassword, signInWithEmailAndPassword, signInAnonymously, onAuthStateChanged } from "firebase/auth";
+import {auth} from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 
 const Login = ({ navigation }) => {
@@ -16,23 +16,24 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     console.log('Handle Sign In')
-    // await signInWithEmailAndPassword(auth, email, password)
-    //   .then((userCredential) => {
-    //     // Signed in
-    //     const user = userCredential.user;
-    //     console.log("user data,", user);
+    await signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        global.userID = user.uid
 
-    //     navigation.navigate('Home');
-    //     setEmail('');
-    //     setPassword('');
-    //   })
-    //   .catch((error) => {
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //     console.log("Error,", errorMessage);
-    //     // ..
-    //     Alert.alert('Invalid Email or password');
-    //   });
+
+        navigation.navigate('Home');
+        setEmail('');
+        setPassword('');
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log("Error,", errorMessage);
+        // ..
+        Alert.alert('Invalid Email or password');
+      });
   };
 
   
