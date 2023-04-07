@@ -7,9 +7,6 @@ import Hometop from '../Components/Hometop';
 
 
 const Home = () => {
-    useEffect(() => {
-        console.log("Home Screen\n",global.userID);
-    }, [])
     
     return (
         <View>

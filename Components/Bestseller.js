@@ -9,6 +9,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 
 
 export default function Bestseller() {
+    const [likeBTN, setLikeBTN] = useState([])
+
     const [myfood, setMyfood] = useState([])
     const [changedLike, setChangedLike] = useState(false);
 
@@ -18,34 +20,36 @@ export default function Bestseller() {
             const collectionref = collection(db, "bestsellers");
             const querySnapshot = await getDocs(collectionref);
             let data = querySnapshot.docs.map(doc => doc.data());
+            data.forEach((item, index) => {
+                if (item.isLike.includes(global.userID)) {
+                    setLikeBTN(prevState => {
+                        const newState = [...prevState];
+                        newState[index] = true;
+                        return newState;
+                    });
+                }
+            });
             setMyfood(data);
-        }
+        };
         getData();
-
-
     }, [changedLike])
 
     const handleLikeBTN = async (id) => {
         const db = getFirestore(app);
+        const result = myfood.find(item => item.id === id);
         const docRef = doc(db, "bestsellers", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const isLiked = data.isLike.includes(global.userID);
-          if (isLiked) {
-            const updatedLikes = data.isLike.filter(likedUser => likedUser !== global.userID);
+        if (result.isLike.includes(global.userID)) {
+            const updatedLikes = result.isLike.filter(likedUser => likedUser !== global.userID);
             await updateDoc(docRef, { isLike: updatedLikes });
-          } else {
-            const updatedLikes = [...data.isLike, global.userID];
+        } else {
+            const updatedLikes = [...result.isLike, global.userID];
             await updateDoc(docRef, { isLike: updatedLikes });
-          }
-            setChangedLike(!changedLike);
         }
-        else{
-            console.log("No such document!");
-        }
-      }
-      
+        setChangedLike(!changedLike);
+    }
+
+
+
 
 
 
@@ -56,26 +60,37 @@ export default function Bestseller() {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             data={myfood}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
 
-                <TouchableOpacity>
-                    <View style={styles.item}>
+                <>
 
-                        <Image style={styles.Images} source={{ uri: item.imageurl }} />
-                        <View style={styles.viewrow}>
-                            <Text style={styles.title}>{item.title}</Text>
-                            <Text style={styles.price}>Rs.{item.price}/-</Text>
-                        </View>
-                        <View style={styles.viewrow}>
+                    <TouchableOpacity>
+                        <View style={styles.item}>
 
-                            <TouchableOpacity onPress={() => { handleLikeBTN(item.id) }}><AntDesign name='heart' style={{ color: item.isLike.includes(global.userID) ? 'red' : 'grey', fontSize: 20, textAlign: 'right' }} /></TouchableOpacity>
-                            <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                                <AntDesign name='staro' style={styles.icon} />
-                                <Text style={styles.rating}>{item.rating}</Text>
+                            <Image style={styles.Images} source={{ uri: item.imageurl }} />
+                            <View style={styles.viewrow}>
+                                <Text style={styles.title}>{item.title}</Text>
+                                <Text style={styles.price}>Rs.{item.price}/-</Text>
+                            </View>
+                            <View style={styles.viewrow}>
+
+                                <TouchableOpacity onPress={() => {
+                                    setLikeBTN(prevState => {
+                                        const newState = [...prevState];
+                                        newState[index] = !newState[index];
+                                        return newState;
+                                    });
+                                    handleLikeBTN(item.id);
+                                }}>
+                                    <AntDesign name='heart' style={{ color: likeBTN[index] ? 'red' : 'grey', fontSize: 20, textAlign: 'right' }} /></TouchableOpacity>
+                                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                                    <AntDesign name='staro' style={styles.icon} />
+                                    <Text style={styles.rating}>{item.rating}</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                </>
                 //color: isLiked ? 'red' : 'grey',
             )}
 
